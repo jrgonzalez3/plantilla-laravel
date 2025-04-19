@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Model;
+
 class User extends Authenticatable implements FilamentUser, HasTenants
 {
     use HasFactory, Notifiable;
@@ -49,16 +51,18 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         ];
     }
 
+
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class);
+    }
+
     public function getTenants($panel): Collection
     {
         return $this->companies;
 
     }
-    public function companies(): BelongsToMany
-    {
-        return $this->belongsToMany(Company::class);
-    }
-    public function canAccessTenant(\Illuminate\Database\Eloquent\Model $tenant): bool
+    public function canAccessTenant($tenant): bool
     {
         return $this->companies->contains($tenant);
     }
